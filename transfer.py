@@ -139,7 +139,7 @@ class TQMDataMining(Singleton):
                3. 批號: {highlight_info['lot_number']}<br>
                4. PPM: {math.floor(highlight_info['ppm'])}. (上限: {highlight_info['ppm_control_limit']})<br>
                <br>
-               連結網頁: <a href="http://10.16.92.65:5940/Result/OpViewPage?lot={highlight_info['lot_number']}">http://10.16.92.65:5940/Result/OpViewPage?lot={highlight_info['lot_number']}</a>
+               連結網頁: <a href="http://10.10.10.10:5000/Result/OpViewPage?lot={highlight_info['lot_number']}">http://10.10.10.10:5000/Result/OpViewPage?lot={highlight_info['lot_number']}</a>
             </p>
         """
         subject = f"[Warning!!!!!][機鑽站] PPM out of control limit. 機台編號: {highlight_info['machine_id']}, 軸: {highlight_info['spindle_id']+1}, 批號: {highlight_info['lot_number']}"

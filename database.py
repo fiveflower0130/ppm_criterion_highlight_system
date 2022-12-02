@@ -5,9 +5,6 @@ from sqlalchemy.orm import sessionmaker
 from typing import Iterator
 from transfer import PPMIniReader
 
-# SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:TID_5940@localhost:3306/tid_5940"
-# # SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:5940@192.168.0.100:3306/automatic_highlight_system"
-
 # # echo=True表示引擎將用repr()函式記錄所有語句及其引數列表到日誌
 # engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -73,8 +70,7 @@ class DBConnection(object):
 class MySQLConnect():
 
     def __init__(self):
-        self.database_url = "mysql+pymysql://5940:5940@localhost:3306/tid_5940"
-        # self.database_url = self.__get_connection_url()
+        self.database_url = self.__get_connection_url()
         self.engine = create_engine(self.database_url)
         self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         self.sessionmaker = FastAPISessionMaker(self.database_url)
@@ -104,7 +100,6 @@ class MySQLConnect():
 class MsSQLConnect():
 
     def __init__(self):
-        self.database_url = ("mssql+pyodbc://sa:mvtqmsystem@10.16.94.44:1433/mvTQMBox""?driver=ODBC+Driver+17+for+SQL+Server")
         self.database_url =self.__get_connection_url()
         self.engine = create_engine(self.database_url)
         self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
