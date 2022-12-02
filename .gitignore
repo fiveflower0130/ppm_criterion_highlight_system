@@ -1,0 +1,7 @@
+# cache folder
+__pycache__
+# virtual env
+venv
+log
+report
+database_schemas
