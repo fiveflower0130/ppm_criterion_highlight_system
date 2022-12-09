@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import models, schemas
 
-# MySQL CRUD
+# ----------------MySQL CRUD----------------------
 async def get_drill_info_count(db: Session):
     data = db.query(models.DrillInfo).count()
     return data
@@ -31,13 +31,13 @@ async def get_drill_info(db: Session, search_items: schemas.SearchDrill):
         data = db.query(models.DrillInfo).\
             filter(
                 models.DrillInfo.lot_number == search_items["lot_number"], 
-            ).all() 
+            ).all()
 
     return data
 
 async def get_ee_info(db: Session):
     data = db.query(models.EEInfo).all()
-    return data 
+    return data
 
 async def get_mail_info(db: Session):
     data = db.query(models.MailInfo).all()
@@ -87,7 +87,7 @@ async def update_drill_report_info(db: Session, search_items: schemas.SearchDril
         result = True
     return result
 
-# MSSQL CRUD
+# --------------------------MSSQL CRUD--------------------------------------
 
 async def get_board_info_count(db: Session):
     data = db.query(models.BoardInfo).filter(models.BoardInfo.AOITime !="").count()
@@ -106,11 +106,10 @@ async def get_boards_info(db: Session, skip: int, limit: int):
     return data
 
 async def get_measure_info(db: Session, board_id: int):
-    
     data = db.query(models.MeasureInfo).\
         filter(
-            models.MeasureInfo.BoardID == board_id, 
-            models.MeasureInfo.ToolID == -1, 
+            models.MeasureInfo.BoardID == board_id,
+            models.MeasureInfo.ToolID == -1,
         ).first()
     return data
 
@@ -118,16 +117,3 @@ async def get_product_name(db: Session, product_id: int):
     data = db.query(models.ProductInfo).filter(models.ProductInfo.ID_PD == product_id).first()
     return data
 
-
-
-# def get_user_info(db: Session, user_id):
-#     data = db.query(models.User).filter(models.User.id == user_id).first()
-#     return data
-
-# def create_user(db: Session, user: schemas.UserCreate):
-#     fake_hashed_password = user.password + "notreallyhashed"
-#     db_user = models.User(username=user.username, password=fake_hashed_password)
-#     db.add(db_user)
-#     db.commit()
-#     db.refresh(db_user)
-#     return db_user

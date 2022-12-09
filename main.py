@@ -60,7 +60,6 @@ async def run_tqm_process():
                 try:
                     board_id = boards_info[i].ID_B
                     product_id = boards_info[i].ProductID
-                
                     product_info = await crud.get_product_name(msdb, product_id)
                     measure_info = await crud.get_measure_info(msdb, board_id)
                     drill_info = tqm.get_drill_info_transfer(boards_info[i], measure_info, product_info)
@@ -75,27 +74,12 @@ async def run_tqm_process():
                                 "ppm":data.ppm,
                                 "ppm_control_limit":data.ppm_control_limit
                             }
-                            mail_list = await crud.get_mail_info(mydb)     
+                            mail_list = await crud.get_mail_info(mydb)
                             send_data = tqm.get_mail_data(highlight_info, mail_list)
                             email.addClient(host=email_host)
                             email.sendEmail(host= email_host, data= send_data)
-                    # if ((drill_info["ppm_control_limit"] > 0) and (drill_info["ratio_target"] > 0)):
-                    #     if (drill_info["judge_ppm"] == False):
-                    #         print(f"Fail_drill_info: {drill_info}")
-                    #         highlight_info = {
-                    #             "machine_id":drill_info["drill_machine_id"],
-                    #             "spindle_id":drill_info["drill_spindle_id"],
-                    #             "lot_number":drill_info["lot_number"],
-                    #             "ppm":drill_info["ppm"],
-                    #             "ppm_control_limit":drill_info["ppm_control_limit"]
-                    #         }
-                    #         mail_list = await crud.get_mail_info(mydb)     
-                    #         send_data = tqm.get_mail_data(highlight_info, mail_list)
-                    #         email.addClient(host=email_host)
-                    #         email.sendEmail(host= email_host, data= send_data)
-                    
                 except Exception as e:
-                    logger.error("error: ", e)              
+                    logger.error("error: ", e)
         else:
             logger.error("Can't fetch boards_info!")
             # break
@@ -124,7 +108,7 @@ async def read_root():
 
 
 @app.get("/api/drill/eelist", response_model=schemas.Resp)
-async def get_ee_list(db: Session = Depends(mysql.get_db)):
+async def get_ee_list(db: Session = Depends(mysql.get_db))->dict:
     """讀取EE通報名單\n
 
     Args: \n
@@ -168,8 +152,9 @@ async def get_drill_info(
 
 @app.get("/api/drill/judge", response_model=schemas.Resp)
 async def get_drill_judge_result(
-    start_time: Optional[datetime] = None, end_time: Optional[datetime] = None, db: Session = Depends(mysql.get_db)
-) -> dict:
+    start_time: Optional[datetime] = None, 
+    end_time: Optional[datetime] = None, 
+    db: Session = Depends(mysql.get_db)):
     """讀取資料庫內穴位機量測結果&系統判斷結果\n
 
     Args: \n
@@ -182,7 +167,6 @@ async def get_drill_judge_result(
         raise HTTPException(status_code=422, detail="end_time could not be empty")
     if end_time and not start_time:
         raise HTTPException(status_code=422, detail="start_time could not be empty")
-    
     try:
         data = await crud.get_judge_info(db, start_time, end_time)
     except Exception as err:
@@ -210,7 +194,6 @@ async def add_email_info(body: schemas.MailInfo, db: Session = Depends(mysql.get
         mail_info = {}
         mail_info["email"] = body.email
         mail_info["send_type"] = body.send_type
-        
         data = await crud.create_mail_info(db, mail_info)
 
     except Exception as err:
@@ -238,7 +221,6 @@ async def add_ee_info(body: schemas.EEInfo, db: Session = Depends(mysql.get_db))
         ee_info = {}
         ee_info["ee_id"] = body.ee_id
         ee_info["name"] = body.name
-        
         data = await crud.create_ee_info(db, ee_info)
 
     except Exception as err:
@@ -268,13 +250,8 @@ async def update_drill_report_info(body: schemas.Report, db: Session = Depends(m
         return resp("machine id could not be empty!")
     if not body.spindle_id:
         return resp("spindle id could not be empty!")
-    # if not body.contact_person:
-    #     return resp("contact person could not be empty!")
-    # if not body.contact_time:
-    #     return resp("contact time could not be empty!")
     search_items = {}
     update_items = {}
-    
     try:
         search_items["lot_number"] = body.lot_number
         search_items["drill_machine_id"] = int(body.machine_id)
@@ -282,7 +259,6 @@ async def update_drill_report_info(body: schemas.Report, db: Session = Depends(m
         update_items["report_ee"] = body.contact_person if body.contact_person else None
         update_items["report_time"] = body.contact_time if body.contact_time else None
         update_items["comment"] = body.comment if body.comment else None
-        
         data = await crud.update_drill_report_info(db, search_items, update_items)
 
     except Exception as err:
@@ -292,6 +268,7 @@ async def update_drill_report_info(body: schemas.Report, db: Session = Depends(m
 
 
 if __name__ == "__main__":
+    # if you don't want to run test before, close it
     pytest.main(['--html=report/report.html', 'test.py'])
     # pytest.main()
     uvicorn.run(app="main:app", host="0.0.0.0", port=8003, reload=True)

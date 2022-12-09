@@ -1,0 +1,28 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:8.0.27 #correct version: 8.0.27
+    restart: always
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: 5940
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    container_name: phpmyadmin
+    ports:
+      - 8083:80
+    environment:
+      PMA_HOST: db
+      PMA_ARBITRARY: 1
+
+volumes:
+  db:

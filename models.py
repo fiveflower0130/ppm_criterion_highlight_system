@@ -1,13 +1,13 @@
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Boolean, DateTime, Float, Integer, String
-from database import MySQLConnect, MsSQLConnect, DBConnection
+from database import DBConnection
 
-# mysql = MySQLConnect()
-# mssql = MsSQLConnect()
+
 mssql = DBConnection("mssql")
 mysql = DBConnection("mysql")
-# -----------MYSQL MODELS-----------
 
+
+# -----------MYSQL MODELS-----------
 class User(mysql.base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -56,8 +56,8 @@ class EEInfo(mysql.base):
     ee_id = Column(String(10))
     name = Column(String(10))
 
-# ---------MSSQL MODELS-----------
 
+# ---------MSSQL MODELS-----------
 class BoardInfo(mssql.base):
     __tablename__ = "tBoard"
 

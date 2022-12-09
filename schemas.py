@@ -16,7 +16,6 @@ class User(UserBase):
     lastSavedAt: str
     lastSavedBy: str
     isLocked: bool
-    
 
     class Config:
         orm_mode = True
@@ -27,27 +26,6 @@ class Resp(BaseModel):
     code: str
     error: str
     data: Any
-
-# class DrillInfo(BaseModel):
-#     product_name: str
-#     lot_number: str
-#     drill_machine_id: int
-#     drill_spindle_id: int
-#     ppm_control_limit: int
-#     ppm: int
-#     judge_ppm: bool
-#     drill_time: datetime
-#     cpk: float
-#     cp :float
-#     ca :float
-#     aoi_time: datetime
-#     ratio_target :float
-#     report_ee: str
-#     report_time: datetime
-#     comment: str
-
-#     class Config:
-#         orm_mode = True
 
 class DrillInfo(BaseModel):
     product_name: str
@@ -80,7 +58,7 @@ class EEInfo(BaseModel):
 
 
 class Report(BaseModel):
-    lot_number: str = Field(..., title="drill lot number") 
+    lot_number: str = Field(..., title="drill lot number")
     machine_id: str = Field(..., title="drill machine id")
     spindle_id: str = Field(..., title="drill spindle id")
     contact_person: Optional[str] = None

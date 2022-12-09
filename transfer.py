@@ -45,7 +45,7 @@ class TQMDataMining(Singleton):
         self.__execution_path = os.getcwd()
         self.__retry = 0
     
-    def get_ppm_control_limit(self, product_name:str)-> int:
+    def __get_ppm_control_limit(self, product_name:str)-> int:
         ppm_control_limit = 0
         file_name= self.__ppm_config.get("Excel", "ppm_file_name")
         file_path = os.path.join(self.__execution_path, file_name)
@@ -61,13 +61,30 @@ class TQMDataMining(Singleton):
             self.__logger.error(f"{str(err)}. ReTry {self.__retry+1}")
             if self.__retry < 3:
                 self.__retry = self.__retry + 1
-                self.get_ppm_control_limit(product_name)
+                self.__get_ppm_control_limit(product_name)
             else:     
                 ppm_control_limit = -1
         finally:
             self.__retry = 0
             return ppm_control_limit
-    
+
+
+    def __get_report_receivers(self, mail_list:list)->dict:
+        data = {
+            "to": [],
+            "cc": [],
+            "bcc": [],
+        }
+        if len(mail_list)>0:
+            for mail in mail_list:
+                if mail.send_type == "to":
+                    data["to"].append(mail.email)
+                if mail.send_type == "cc":
+                    data["cc"].append(mail.email)
+                if mail.send_type == "bcc":
+                    data["bcc"].append(mail.email)
+        return data
+
     def get_drill_info_transfer(self, board: object, measure: object, product: object)->dict:
         drill_info = {}
         drill_info["lot_number"] = str(board.Lot)
@@ -87,10 +104,10 @@ class TQMDataMining(Singleton):
                 drill_info["aoi_time"] = datetime.strptime(board.AOITime, "%Y/%m/%d")
             else:
                 drill_info["aoi_time"] = None
-        
+
         drill_info["drill_machine_id"] = int(board.DrillMachineID)
         drill_info["drill_spindle_id"] = int(board.DrillSpindleID)
-        drill_info["ppm_control_limit"] = self.get_ppm_control_limit(product_name=drill_info["product_name"]) 
+        drill_info["ppm_control_limit"] = self.__get_ppm_control_limit(product_name=drill_info["product_name"]) 
         if measure:
             drill_info["ratio_target"] = float(measure.RatioInTarget_Before) if measure.RatioInTarget_Before else 0
             drill_info["cpk"] = float(measure.Cpk_Z_Before) if measure.Cpk_Z_Before else -1
@@ -106,35 +123,19 @@ class TQMDataMining(Singleton):
         drill_info["judge_ppm"] = False if ((math.ceil(drill_info["ppm"]) > drill_info["ppm_control_limit"])) else True
         return drill_info
 
-    def get_report_receivers(self, mail_list:list)->dict:
-        data = {
-            "to": [],
-            "cc": [],
-            "bcc": [],
-        }
-        if len(mail_list)>0:
-            for mail in mail_list:
-                if mail.send_type == "to":
-                    data["to"].append(mail.email)
-                if mail.send_type == "cc":
-                    data["cc"].append(mail.email)
-                if mail.send_type == "bcc":
-                    data["bcc"].append(mail.email)
-        return data
-    
-    def get_mail_data(self, highlight_info:dict, mail_list:list):
+    def get_mail_data(self, highlight_info:dict, mail_list:list)->dict:
         sender = {
             'name': 'PPM Hightlight System Manager',
             'email': 'TID5940@aseglobal.com'
         }
-        receivers = self.get_report_receivers(mail_list)
-        
+        receivers = self.__get_report_receivers(mail_list)
+
         content =f"""
             <p>
                Dear all,<br> 
                機鑽穴位圖PPM已超出管制上限. 請EE立即至該機台確認<br>
                <br>
-               1. 機台編號: {highlight_info['machine_id']}<br>
+               1. 機台編號: {highlight_info['machine_id']+1}<br>
                2. 軸: {highlight_info['spindle_id']+1}<br>
                3. 批號: {highlight_info['lot_number']}<br>
                4. PPM: {math.floor(highlight_info['ppm'])}. (上限: {highlight_info['ppm_control_limit']})<br>
@@ -142,7 +143,7 @@ class TQMDataMining(Singleton):
                連結網頁: <a href="http://10.10.10.10:5000/Result/OpViewPage?lot={highlight_info['lot_number']}">http://10.10.10.10:5000/Result/OpViewPage?lot={highlight_info['lot_number']}</a>
             </p>
         """
-        subject = f"[Warning!!!!!][機鑽站] PPM out of control limit. 機台編號: {highlight_info['machine_id']}, 軸: {highlight_info['spindle_id']+1}, 批號: {highlight_info['lot_number']}"
+        subject = f"[Warning!!!!!][機鑽站] PPM out of control limit. 機台編號: {highlight_info['machine_id']+1}, 軸: {highlight_info['spindle_id']+1}, 批號: {highlight_info['lot_number']}"
 
         send_data = {
             'from': sender,

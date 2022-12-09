@@ -44,14 +44,14 @@ class DBConnection(object):
             db = ppm_config.get('Database', 'my_db')
 
             url = (f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}")
-            
+
         return url
 
     def __get_fastapi_sessionmaker(self) -> FastAPISessionMaker:
         """ This function could be replaced with a global variable if preferred """
         database_uri = self.database_url
         return FastAPISessionMaker(database_uri)
-    
+
     def get_db(self) -> Iterator[sessionmaker]:
         """ FastAPI dependency that provides a sqlalchemy session """
         yield from self.sessionmaker.get_db()
@@ -67,62 +67,62 @@ class DBConnection(object):
             db.close()
 
 
-class MySQLConnect():
+# class MySQLConnect():
 
-    def __init__(self):
-        self.database_url = self.__get_connection_url()
-        self.engine = create_engine(self.database_url)
-        self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
-        self.sessionmaker = FastAPISessionMaker(self.database_url)
-        self.base = declarative_base()
+#     def __init__(self):
+#         self.database_url = self.__get_connection_url()
+#         self.engine = create_engine(self.database_url)
+#         self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+#         self.sessionmaker = FastAPISessionMaker(self.database_url)
+#         self.base = declarative_base()
 
-    def __get_connection_url(self) -> str:
-        """ get MYSQL info from ini config """
-        user = ppm_config.get('Database', 'my_user')
-        password = ppm_config.get('Database', 'my_password')
-        host = ppm_config.get('Database', 'my_host')
-        port = ppm_config.get('Database', 'my_port')
-        db = ppm_config.get('Database', 'my_db')
+#     def __get_connection_url(self) -> str:
+#         """ get MYSQL info from ini config """
+#         user = ppm_config.get('Database', 'my_user')
+#         password = ppm_config.get('Database', 'my_password')
+#         host = ppm_config.get('Database', 'my_host')
+#         port = ppm_config.get('Database', 'my_port')
+#         db = ppm_config.get('Database', 'my_db')
 
-        url = (f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}")
-        return url
+#         url = (f"mysql+pymysql://{user}:{password}@{host}:{port}/{db}")
+#         return url
     
-    def get_db_session(self):
-        db = self.session()
-        try:
-            yield db
-        except Exception:
-            db.rollback()
-            raise
-        finally:
-            db.close()
+#     def get_db_session(self):
+#         db = self.session()
+#         try:
+#             yield db
+#         except Exception:
+#             db.rollback()
+#             raise
+#         finally:
+#             db.close()
 
-class MsSQLConnect():
+# class MsSQLConnect():
 
-    def __init__(self):
-        self.database_url =self.__get_connection_url()
-        self.engine = create_engine(self.database_url)
-        self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
-        self.sessionmaker = FastAPISessionMaker(self.database_url)
-        self.base = declarative_base()
+#     def __init__(self):
+#         self.database_url =self.__get_connection_url()
+#         self.engine = create_engine(self.database_url)
+#         self.session = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+#         self.sessionmaker = FastAPISessionMaker(self.database_url)
+#         self.base = declarative_base()
 
-    def __get_connection_url(self) -> str:
-        """ get MSSQL info from ini config """
-        user = ppm_config.get('Database', 'ms_user')
-        password = ppm_config.get('Database', 'ms_password')
-        host = ppm_config.get('Database', 'ms_host')
-        port = ppm_config.get('Database', 'ms_port')
-        db = ppm_config.get('Database', 'ms_db')
+#     def __get_connection_url(self) -> str:
+#         """ get MSSQL info from ini config """
+#         user = ppm_config.get('Database', 'ms_user')
+#         password = ppm_config.get('Database', 'ms_password')
+#         host = ppm_config.get('Database', 'ms_host')
+#         port = ppm_config.get('Database', 'ms_port')
+#         db = ppm_config.get('Database', 'ms_db')
 
-        url = (f"mssql+pyodbc://{user}:{password}@{host}:{port}/{db}""?driver=ODBC+Driver+17+for+SQL+Server")
-        return url
+#         url = (f"mssql+pyodbc://{user}:{password}@{host}:{port}/{db}""?driver=ODBC+Driver+17+for+SQL+Server")
+#         return url
     
-    def get_db_session(self):
-        db = self.session()
-        try:
-            yield db
-        except Exception:
-            db.rollback()
-            raise
-        finally:
-            db.close()
+#     def get_db_session(self):
+#         db = self.session()
+#         try:
+#             yield db
+#         except Exception:
+#             db.rollback()
+#             raise
+#         finally:
+#             db.close()
