@@ -6,7 +6,6 @@ _© 2022 Dante
 
 ### environment
 python version: v3.7, or you choose v3.8 - v3.10
-extension of folder idenprof: link `https://drive.google.com/drive/folders/1CW0j2uOgdNZU7iCe9odZbnkdosdMNMRV?usp=sharing`
 
 ### 1. Run docker
 If you don't have MsSQL and MySQL DB,
